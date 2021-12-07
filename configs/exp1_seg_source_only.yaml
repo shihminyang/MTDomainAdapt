@@ -1,0 +1,61 @@
+exp_name: exp1_seg_source_only  # Experiment name
+
+# Logger options
+resume: False                   # Wether resume training states
+image_save_iter: 1000           # How often do you want to save output images during training
+image_display_iter: 500         # How often do you want to display output images during training
+snapshot_save_iter: 1000        # How often do you want to save trained models
+log_iter: 100                   # How often do you want to log the training stats
+eval_iter: 1000                 # How often do you want to evaluate the model in validation set
+
+# Optimization options
+max_epoch: 50                   # Maximum number of training epochs
+max_iter: 200000                # Maximum number of training iterations
+cls_batch_size:                 # Batch size in training
+seg_batch_size: 4               # Batch size in training
+test_size: 1                    # Batch size in testing
+momentum: 0.9
+weight_decay: 0.0005            # Weight decay
+lr: 0.001                       # Initial learning rate
+lr_policy: constant             # Learning rate scheduler [step/multi_step/constant]
+step_size:                      # How often to decay learning rate
+gamma:                          # How much to decay learning rate
+init: kaiming                   # Initialization [gaussian/kaiming/xavier/orthogonal]
+
+# Loss function weights
+seg_w: 1                        # Weight of classifier loss
+
+# Model options
+task:       Segmentation        # [Classification/Segmentation/Multi_task]
+trainer:    Segment
+translator:                     # [None/Latent]
+classifier:                     # [None/ResNet50]
+segmentor: FCN8sRes101          # [None/FCN8sRes50/FCN8sRes101]
+freeze_list: []                 # ['gen_a_enc', 'segmentor', 'classifier', 'gen_b_enc', 'dis_h', 'enc_bridge']
+
+# Using pretrained model
+pretrained_checkpoint:              # Directory for pretrained model.
+
+# Data options
+num_class: {'cls': 12, 'seg': 20}   # Number of categories
+num_workers: 4                      # Number of data loading threads.
+new_size:                           # First resize the shortest image side to this size
+    {'classification': ,
+     'segmentation':   1024}
+crop:                               # [Wether crop the images, crop height, crop width, wether pad after crop]
+    {'classification': ,
+     'segmentation':   [True, 512, 512]}
+
+# Path and directory
+data_root_cls:                      # Data root. Using for prepare dataset and data loader
+    "./datasets/VisDA_17/closedset_classification"
+data_root_seg:
+    "./datasets/VisDA_17/semantic_segmentation"
+data_list:
+    {'train': 'train_list.txt', 'val': 'val_list.txt', 'test': 'test_list.txt'}
+
+category:                           # Dataset category
+    ['road', 'sidewalk', 'building', 'wall', 'fence',
+     'pole', 'traffic light', 'traffic sign', 'vegetation', 'terrain',
+     'sky', 'person', 'rider', 'car', 'truck',
+     'bus', 'train', 'motorcycle', 'bicycle']

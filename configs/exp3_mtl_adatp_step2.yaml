@@ -1,0 +1,101 @@
+exp_name: exp3_mtl_adatp_step2  # Experiment name
+
+# Logger options
+resume: False                   # Wether resume training states
+image_save_iter: 4000           # How often do you want to save output images during training
+image_display_iter: 2000000     # How often do you want to display output images during training
+snapshot_save_iter: 2000        # How often do you want to save trained models
+log_iter: 100                   # How often do you want to log the training stats
+eval_iter: 2000                 # How often do you want to evaluate the model in validation set
+
+# Optimization options
+max_epoch: 100                  # Maximum number of training epochs
+max_iter: 1000000               # Maximum number of training iterations
+cls_batch_size: 12              # Batch size in training
+seg_batch_size: 2               # Batch size in training
+test_size: 8                    # Batch size in testing
+momentum: 0.9
+weight_decay: 0.0001            # Weight decay
+lr: 0.0000001                   # Initial learning rate
+slr: 0.0000001                  # Initial learning rate
+lr_policy: multi_step           # Learning rate scheduler [step/multi_step/constant]
+step_size: [100000]             # How often to decay learning rate
+gamma: 1                        # How much to decay learning rate
+init: kaiming                   # Initialization [gaussian/kaiming/xavier/orthogonal]
+
+# Loss function weights
+tran_dis_w: 0.25
+tran_gen_w: 0.25
+latent_dis_w: 0.25
+latent_gen_w: 0.25
+recon_w: 1                      # Weight of image reconstruction loss
+cyc_w: 0                        # Weight of cycle consistency loss
+
+cls_w: 1                        # Weight of classifier loss
+seg_w: 1                        # Weight of segmentor loss
+tran_cls_w: 1                   # Weight of translat classifier loss
+tran_seg_w: 1                   # Weight of translate segmentor loss
+tran_h_w: 0
+
+# Model options
+task:       Multi_task                  # [Classification/Segmentation/Multi_task]
+trainer:    MTAdapt
+translator: Latent                      # [None/Latent]
+classifier: ResNet101                   # [None/ResNet50/ResNet101]
+segmentor:  ResNet101                   # [None/FCN8sRes50/ResNet101]
+dis:
+    dim: 16
+    gan_type: lsgan             # [lsgan/nsgan]
+    num_downsample: 4
+dis_h:
+    dim: 64
+    gan_type: lsgan             # [lsgan/nsgan]
+    num_downsample: 2
+freeze_list:
+    ['classifier', 'segmentor', 'enc_bridge1']
+
+# Using pretrained model
+pretrained_checkpoint:
+    ./results/exp3_mtl_adatp_step1/checkpoints
+bdg_weights: bdg1_00046000.pt
+bdg2_weights: bdg2_00046000.pt
+enc_weights:
+gen_weights: gen_00046000.pt
+cls_weights: cls_00046000.pt
+seg_weights: seg_00046000.pt
+dis_weights: dis_00046000.pt
+
+enc: True
+FBN: ['bdg2']
+
+# Data options
+num_class: {'cls': 12, 'seg': 20}   # Number of categories
+num_workers: 2                      # Number of data loading threads.
+new_size:                           # First resize the shortest image side to this size
+    {'classification': 256,
+     'segmentation':   1024}
+crop:                               # [Wether crop the images, crop height, crop width, wether pad after crop]
+    {'classification': [True, 224, 224],
+     'segmentation':   [True, 256, 512]}
+
+# Path and directory
+data_root_cls:                      # Data root. Using for prepare dataset and data loader
+    "./datasets/VisDA_17/closedset_classification"
+data_root_seg:
+    "./datasets/VisDA_17/semantic_segmentation"
+
+data_list_s:                        # For Classification
+    {'train': 'source_train_list.txt', 'val': 'source_val_list.txt', 'test': 'source_test_list.txt'}
+data_list_t:                        # For Classification
+    {'train': 'target_train_list.txt', 'val': 'target_val_list.txt', 'test': 'target_test_list.txt'}
+data_list:                          # For Semantic segmentation
+    {'train': 'train_list.txt', 'val': 'test_list.txt', 'test': 'test_list.txt', 'all': 'all_list.txt'}
+
+category:                           # Dataset category
+    {'cls': ['aeroplane', 'bicycle', 'bus','car',
+             'horse', 'knife', 'motorcycle', 'person',
+             'plant', 'skateboard', 'train', 'truck'],
+     'seg': ['road', 'sidewalk', 'building', 'wall', 'fence',
+             'pole', 'traffic light', 'traffic sign', 'vegetation', 'terrain',
+             'sky', 'person', 'rider', 'car', 'truck',
+             'bus', 'train', 'motorcycle', 'bicycle']}
